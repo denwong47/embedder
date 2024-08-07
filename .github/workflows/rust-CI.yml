@@ -1,0 +1,41 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main", "development", "staging" ]
+    paths:
+      - 'src/**'
+      - 'crates/**'
+  pull_request:
+    branches: [ "main", "development", "staging" ]
+    paths:
+      - 'src/**'
+      - 'crates/**'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      LIBTORCH_USE_PYTORCH: 1
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: hecrj/setup-rust-action@v2
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install PyTorch
+      run: |
+        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+    - name: Build
+      run: cargo build --verbose
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+    - name: Check clippy
+      run: cargo clippy --all-targets --all-features -- -D warnings
+    - name: Run tests
+      run: RUST_LOG=debug cargo test --verbose

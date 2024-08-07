@@ -1,0 +1,11 @@
+name: embedder
+
+services:
+  convert-model:
+    build:
+      context: .
+      dockerfile: docker/ConvertModel.Dockerfile
+    image: denwong47/embedder-convert-model
+    tty: true
+    volumes:
+    - ./models:/root/models

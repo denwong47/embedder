@@ -1,0 +1,11 @@
+[package]
+name = "embedder"
+version = "0.1.0"
+edition = "2021"
+
+exclude = ["crates/rust-bert/**", "models/**"]
+
+[dependencies]
+axum = "0.7.5"
+embedder-lib = { version = "0.1.0", path = "crates/embedder-lib" }
+tokio = { version = "1.39.2", features = ["sync", "macros", "rt-multi-thread"] }
