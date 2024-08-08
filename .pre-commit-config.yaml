@@ -29,17 +29,8 @@ repos:
     - id: actionlint-docker
 -   repo: local
     hooks:
-      - id: cargo-fmt
-        name: cargo-fmt
-        entry: bash -c 'cargo fmt --all'
+      - id: cargo-ci-docker
+        name: Run CI in Linux docker
+        entry: bash -c "make cargo-ci-docker"
         language: system
         fail_fast: true
-      - id: cargo-clippy
-        name: cargo-clippy
-        entry: bash -c 'cargo clippy --fix --allow-staged --allow-dirty --all-targets --all-features -- -D warnings'
-        language: system
-        fail_fast: true
-      - id: cargo-test
-        name: cargo-test
-        entry: bash -c 'cargo test --all'
-        language: system
