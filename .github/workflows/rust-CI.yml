@@ -30,7 +30,7 @@ jobs:
         python-version: '3.11'
     - name: Install PyTorch
       run: |
-        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+        pip install torch==2.1.0 "optimum[exporters]" --extra-index-url https://download.pytorch.org/whl/cpu
     - name: Build
       run: cargo build --verbose
     - name: Check formatting

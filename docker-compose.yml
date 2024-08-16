@@ -1,15 +1,6 @@
 name: embedder
 
 services:
-  cargo-ci:
-    build:
-      context: .
-      dockerfile: docker/Cargo.Dockerfile
-      args:
-        - MODE=ci
-    image: denwong47/embedder-cargo
-    volumes:
-    - .:/root/embedder
   convert-model:
     build:
       context: .
@@ -17,3 +8,5 @@ services:
     image: denwong47/embedder-convert-model
     volumes:
     - ./models:/root/models
+    environment:
+    - MODEL=${MODEL}
