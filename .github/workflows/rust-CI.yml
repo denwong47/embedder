@@ -1,22 +1,25 @@
 name: Rust
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "development", "staging" ]
     paths:
       - 'src/**'
       - 'crates/**'
+      - '.github/workflows/rust-CI.yml'
   pull_request:
     branches: [ "main", "development", "staging" ]
     paths:
       - 'src/**'
       - 'crates/**'
+      - '.github/workflows/rust-CI.yml'
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  rust-test:
 
     runs-on: ubuntu-latest
     env:
@@ -24,13 +27,38 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: hecrj/setup-rust-action@v2
+      with:
+        submodules: 'true'
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+    - name: Restore cached Models
+      id: cache-models-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          .cache/models
+        key: ${{ runner.os }}-models
     - name: Install PyTorch
+      if: ${{ steps.cache-models-restore.outputs.cache-hit != 'true' }}
       run: |
-        pip install torch==2.1.0 "optimum[exporters]" --extra-index-url https://download.pytorch.org/whl/cpu
+        pip install sentence-transformers "optimum[exporters]" --extra-index-url https://download.pytorch.org/whl/cpu
+    - name: Build Models
+      if: ${{ steps.cache-models-restore.outputs.cache-hit != 'true' }}
+      dir: .cache/models
+      env:
+        MODEL: sentence-transformers/all-MiniLM-L6-v2
+      run: |
+        ./docker/convert_model.sh
+    - name: Cache Models
+      if: ${{ success() }}
+      id: cache-models-save
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          .cache/models
+        key: ${{ runner.os }}-models
+    - uses: hecrj/setup-rust-action@v2
     - name: Build
       run: cargo build --verbose
     - name: Check formatting
