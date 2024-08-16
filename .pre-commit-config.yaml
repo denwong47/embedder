@@ -39,7 +39,7 @@ repos:
         entry: bash -c 'cargo clippy --fix --allow-staged --all-targets --all-features -- -D warnings'
         language: system
         fail_fast: true
-      - id: cargo-test
+      - id: cargo-test-api
         name: cargo-test
         entry: bash -c 'cargo test --all-features'
         language: system

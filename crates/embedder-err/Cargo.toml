@@ -1,0 +1,13 @@
+[package]
+name = "embedder-err"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+api = ["axum"]
+axum = ["dep:axum"]
+
+[dependencies]
+axum = { version = "0.7.5", optional = true }
+fastembed = { version = "3.14.1", path = "../fastembed-rs" }
+thiserror = "1.0.63"

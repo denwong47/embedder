@@ -29,5 +29,16 @@ runs:
     - name: Build Models
       working-directory: ${{ inputs.output }}
       run: |
-        optimum-cli export onnx --model ${{ inputs.model }} ${{ inputs.model }}
+        optimum-cli export onnx --model ${{ inputs.model }} /tmp/${{ inputs.model }}
+      shell: bash
+    # We have to do this, otherwise some files will be missing
+    - name: Create Model Directory
+      working-directory: ${{ inputs.output }}
+      run: |
+        mkdir -p ${{ inputs.model }}
+      shell: bash
+    - name: Move Model
+      working-directory: ${{ inputs.output }}
+      run: |
+        mv /tmp/${{ inputs.model }}/** ${{ inputs.model }}
       shell: bash

@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 ndarray = { version = "0.16.0", features = ["serde"] }
 fastembed = { path = "../fastembed-rs" }
+embedder-err = { version = "0.1.0", path = "../embedder-err" }
