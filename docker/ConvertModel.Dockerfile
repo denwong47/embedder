@@ -1,23 +1,13 @@
 FROM python:3.11-slim-bookworm AS base
 
 # Install dependencies
-RUN apt update && apt install -y build-essential libtorch-dev curl pkg-config libssl-dev git
-
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-
-# Set up environment for Cargo
-RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
-
-# Copy the Rust-Bert crate
-WORKDIR /root/crates
-RUN git clone https://github.com/guillaume-be/rust-bert.git
-RUN pip install --upgrade pip && pip install --extra-index-url https://download.pytorch.org/whl/cpu -r /root/crates/rust-bert/utils/requirements.txt
+RUN apt update && apt install -y build-essential
+RUN pip install --extra-index-url https://download.pytorch.org/whl/cpu --upgrade pip optimum[exporters] sentence_transformers
 
 VOLUME ["/root/models"]
 
-#
-COPY docker/convert_model.sh /root
+RUN mkdir -p /root/models
 WORKDIR /root/models
+COPY docker/convert_model.sh /root/convert_model.sh
 
-ENTRYPOINT [ "/bin/bash", "/root/convert_model.sh" ]
+ENTRYPOINT [ "bash", "-c", "/root/convert_model.sh" ]

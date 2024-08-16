@@ -1,6 +1,3 @@
-[submodule "models/all-mpnet-base-v2"]
-	path = models/all-mpnet-base-v2
-	url = https://huggingface.co/sentence-transformers/all-mpnet-base-v2
-[submodule "models/all-MiniLM-L6-v2"]
-	path = models/all-MiniLM-L6-v2
-	url = https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+[submodule "crates/fastembed-rs"]
+	path = crates/fastembed-rs
+	url = git@github.com:denwong47/fastembed-rs
