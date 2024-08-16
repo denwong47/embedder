@@ -1,22 +1,25 @@
 name: Rust
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "development", "staging" ]
     paths:
       - 'src/**'
       - 'crates/**'
+      - '.github/workflows/rust-CI.yml'
   pull_request:
     branches: [ "main", "development", "staging" ]
     paths:
       - 'src/**'
       - 'crates/**'
+      - '.github/workflows/rust-CI.yml'
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  rust-test:
 
     runs-on: ubuntu-latest
     env:
@@ -24,13 +27,39 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: hecrj/setup-rust-action@v2
-    - uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
-    - name: Install PyTorch
-      run: |
-        pip install torch==2.1.0 "optimum[exporters]" --extra-index-url https://download.pytorch.org/whl/cpu
+        submodules: 'true'
+    - name: Restore cached Models
+      id: cache-models-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          .cache/models
+        key: ${{ runner.os }}-models
+    # TODO Can matrix this
+    - uses: ./.github/actions/build-onnx
+      if: steps.cache-models-restore.outputs.cache-hit != 'true'
+      id: build-onnx-minilm
+      name: Build ONNX Model - all-MiniLM-L6-v2
+      with:
+        model: 'sentence-transformers/all-MiniLM-L6-v2'
+        output: '.cache/models'
+    - uses: ./.github/actions/build-onnx
+      if: steps.cache-models-restore.outputs.cache-hit != 'true'
+      id: build-onnx-mpnet
+      name: Build ONNX Model - all-mpnet-base-v2
+      with:
+        model: 'sentence-transformers/all-mpnet-base-v2'
+        output: '.cache/models'
+    - name: Cache Models
+      if: ${{ success() }}
+      id: cache-models-save
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          .cache/models
+        key: ${{ runner.os }}-models
+    - uses: hecrj/setup-rust-action@v2
     - name: Build
       run: cargo build --verbose
     - name: Check formatting

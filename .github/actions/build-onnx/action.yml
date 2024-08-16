@@ -1,0 +1,33 @@
+name: Build ONNX model from Huggingface
+description: |
+  Builds an ONNX model from a Huggingface model, and store to a local directory.
+
+inputs:
+  model:
+    description: 'The Huggingface model to convert to ONNX.'
+    required: true
+    default: 'sentence-transformers/all-MiniLM-L6-v2'
+  output:
+    description: 'The output directory to store the ONNX model.'
+    required: true
+    default: '.cache/models'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Optimum CLI
+      run: |
+        pip install sentence-transformers "optimum[exporters]" --extra-index-url https://download.pytorch.org/whl/cpu
+      shell: bash
+    - name: Create Model Directory
+      run: |
+        mkdir -p .cache/models
+      shell: bash
+    - name: Build Models
+      working-directory: ${{ inputs.output }}
+      run: |
+        optimum-cli export onnx --model ${{ inputs.model }} ${{ inputs.model }}
+      shell: bash
