@@ -38,6 +38,8 @@ jobs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
+          crates/embedder-lib/target/
+          crates/embedder-err/target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Restore cached Models
       id: cache-models-restore
@@ -68,17 +70,26 @@ jobs:
     - name: Check formatting
       run: cargo fmt --all -- --check
     - name: Check clippy
+      env:
+        RUST_LOG: debug
+        MODEL_PATH: ${{ github.workspace }}/.cache/models
       run: cargo clippy --all-features -- -D warnings
     - name: Run tests (Library)
       working-directory: crates/embedder-lib
       env:
         RUST_LOG: debug
-        MODEL_PATH: ../../.cache/models
-      run: cargo test --all-features
+        MODEL_PATH: ${{ github.workspace }}/.cache/models
+      run: cargo test --all-features -- --nocapture
+    - name: Clean up after test
+      working-directory: crates/embedder-lib
+      run: cargo clean
     - name: Run tests (API)
       env:
         RUST_LOG: debug
-      run: cargo test --all-features
+        MODEL_PATH: ${{ github.workspace }}/.cache/models
+      run: cargo test --all-features -- --nocapture
+    - name: Clean up after test
+      run: cargo clean --package embedder-lib
     - name: Cache Models
       if: ${{ success() && steps.cache-models-restore.outputs.cache-hit != 'true' }}
       id: cache-models-save
