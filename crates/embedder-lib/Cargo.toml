@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["sentence_transformers"]
+default = ["sentence_transformers_all_minilm_l6_v2"]
 sentence_transformers_all_minilm_l6_v2 = []
 sentence_transformers_all_mpnet_base_v2 = []
 sentence_transformers = ["sentence_transformers_all_minilm_l6_v2", "sentence_transformers_all_mpnet_base_v2"]

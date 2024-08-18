@@ -6,7 +6,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum EmbedderError {
-    #[error("Model could not be loaded from {path}: {error}")]
+    #[error("Model files could not be loaded from {path}: {error}")]
     ModelPathError {
         path: Box<std::path::Path>,
         error: std::io::Error,

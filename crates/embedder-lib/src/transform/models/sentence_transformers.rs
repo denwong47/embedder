@@ -26,10 +26,9 @@ macro_rules! create_model {
 
             static MODEL: OnceLock<Result<Arc<Model>, EmbedderError>> = OnceLock::new();
 
-            /// Model for the `all-mpnet-base-v2` model.
-            ///
-            /// This has private fields, preventing instantiation
-            /// without the `new` method.
+            #[doc = "Singleton struct for the `"]
+            #[doc = $name]
+            #[doc = "` model."]
             pub struct Model {
                 model: fastembed::TextEmbedding,
             }
@@ -61,7 +60,7 @@ macro_rules! create_model {
                                 tokenizer_config_file: binaries::$binaries::TOKENIZER_CONFIG_FILE
                                     .to_vec(),
                             },
-                            pooling: Self::POOLING,
+                            pooling: $pooling,
                             quantization: $quantization,
                         };
 
@@ -86,8 +85,20 @@ macro_rules! create_model {
             }
 
             impl CanTransform for Model {
-                const OUTPUT_KEY: &'static str = $output_key;
-                const POOLING: Option<fastembed::Pooling> = $pooling;
+                /// The name of the model.
+                fn name(&self) -> &str {
+                    Self::NAME
+                }
+
+                /// The output key of the model.
+                fn output_key(&self) -> &'static str {
+                    $output_key
+                }
+
+                /// The pooling method used by the model.
+                fn pooling(&self) -> Option<fastembed::Pooling> {
+                    $pooling
+                }
 
                 /// Transforms the input texts into embeddings.
                 fn transform<'e, 'r, 's, S: AsRef<str> + Send + Sync>(
