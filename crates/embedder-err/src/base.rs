@@ -4,6 +4,8 @@
 use std::boxed::Box;
 use thiserror::Error;
 
+use embedder_external::fastembed;
+
 #[derive(Error, Debug)]
 pub enum EmbedderError {
     #[error("Model files could not be loaded from {path}: {error}")]

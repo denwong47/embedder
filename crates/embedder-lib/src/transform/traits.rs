@@ -3,6 +3,7 @@
 
 use crate::Embedding;
 use embedder_err::EmbedderError;
+use embedder_external::{fastembed, ndarray};
 
 const EPS: f32 = 1e-12;
 

@@ -1,0 +1,21 @@
+[package]
+name = "embedder-external"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+api = ["axum"]
+axum = ["dep:axum"]
+
+cli = ["clap"]
+clap = ["dep:clap"]
+
+[dependencies]
+axum = { version = "0.7.5", optional = true }
+clap = { version = "4.5.16", optional = true, features = ["derive"] }
+fastembed = { version = "3.14.1", path = "../fastembed-rs" }
+# This needs to be the same version as in fastembed-rs
+ndarray = { version = "=0.15.0", default-features = false }
+serde = { version = "1.0.208" }
+serde_json = "1.0.125"
+utoipa = "4.2.3"

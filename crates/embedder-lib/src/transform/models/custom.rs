@@ -1,6 +1,7 @@
 use crate::transform::traits::CanTransform;
 
 use embedder_err::EmbedderError;
+use embedder_external::fastembed;
 use std::sync::Arc;
 
 pub struct Model {
@@ -122,7 +123,7 @@ impl Model {
     }
 }
 
-impl CanTransform for Model {
+impl CanTransform for Arc<Model> {
     /// The name of the model.
     fn name(&self) -> &str {
         &self.name

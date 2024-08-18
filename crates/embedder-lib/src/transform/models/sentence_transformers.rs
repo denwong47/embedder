@@ -7,6 +7,7 @@ use super::binaries;
 use crate::transform::traits::CanTransform;
 
 use embedder_err::EmbedderError;
+use embedder_external::fastembed;
 use std::sync::{Arc, OnceLock};
 
 macro_rules! create_model {
@@ -84,10 +85,10 @@ macro_rules! create_model {
                 }
             }
 
-            impl CanTransform for Model {
+            impl CanTransform for Arc<Model> {
                 /// The name of the model.
                 fn name(&self) -> &str {
-                    Self::NAME
+                    Model::NAME
                 }
 
                 /// The output key of the model.
