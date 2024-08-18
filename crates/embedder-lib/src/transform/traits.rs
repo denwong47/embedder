@@ -7,9 +7,14 @@ use embedder_err::EmbedderError;
 const EPS: f32 = 1e-12;
 
 pub trait CanTransform {
+    /// The name of the model.
+    fn name(&self) -> &str;
+
     /// The chosen key for the output embeddings.
-    const OUTPUT_KEY: &'static str = "sentence_embedding";
-    const POOLING: Option<fastembed::Pooling> = None;
+    fn output_key(&self) -> &'static str;
+
+    /// The pooling method to use.
+    fn pooling(&self) -> Option<fastembed::Pooling>;
 
     /// The key for the output embeddings.
     ///
@@ -18,12 +23,13 @@ pub trait CanTransform {
     ///
     /// Instead of trying different keys in succession, the embedding operation
     /// should fail if the key is not found.
-    fn output_precedence() -> &'static [fastembed::OutputKey] {
-        &[fastembed::OutputKey::ByName(Self::OUTPUT_KEY)]
+    fn output_precedence<'e>(&self) -> [fastembed::OutputKey; 1] {
+        [fastembed::OutputKey::ByName(self.output_key())]
     }
 
     /// Static function to converts the output to a 2D array.
     fn output_to_2d_array<'r, 's>(
+        &self,
         output: fastembed::EmbeddingOutput<'r, 's>,
     ) -> Result<ndarray::Array2<f32>, EmbedderError> {
         output
@@ -33,7 +39,10 @@ pub trait CanTransform {
                     batches
                         .iter()
                         .map(|batch| {
-                            batch.select_and_pool_output(&Self::output_precedence(), Self::POOLING)
+                            batch.select_and_pool_output(
+                                &self.output_precedence().as_slice(),
+                                self.pooling(),
+                            )
                         })
                         .reduce(|acc, res| match (acc, res) {
                             (Err(e), _) => return Err(e),
@@ -86,7 +95,7 @@ pub trait CanTransform {
         'e: 's,
     {
         let output = self.transform(texts, batch_size)?;
-        Self::output_to_2d_array(output)
+        self.output_to_2d_array(output)
     }
 
     /// Exports the model to a [`Vec<Embedding>`].

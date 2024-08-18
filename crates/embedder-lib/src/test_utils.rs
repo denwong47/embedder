@@ -38,3 +38,8 @@ where
         })
         .unwrap_or(default)
 }
+
+/// Get the path to the model from the environment variable `MODEL_PATH`.
+pub fn get_model_path() -> String {
+    get_env_var("MODEL_PATH", DEFAULT_MODEL_PATH.to_owned())
+}
