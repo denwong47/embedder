@@ -14,8 +14,6 @@ itertools = "0.13.0"
 unicode-ident = "1.0.12"
 
 [dependencies]
-# This needs to be the same version as in fastembed-rs
-ndarray = { version = "=0.15.0", default-features = false }
-fastembed = { path = "../fastembed-rs" }
 embedder-err = { version = "0.1.0", path = "../embedder-err" }
 anyhow = "1.0.86"
+embedder-external = { version = "0.1.0", path = "../embedder-external" }

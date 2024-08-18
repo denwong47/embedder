@@ -5,9 +5,13 @@ edition = "2021"
 
 [features]
 api = ["axum"]
-axum = ["dep:axum"]
+axum = ["embedder-external/axum"]
+
+cli = ["clap"]
+clap = ["embedder-external/clap"]
 
 [dependencies]
-axum = { version = "0.7.5", optional = true }
-fastembed = { version = "3.14.1", path = "../fastembed-rs" }
+serde = { version = "1.0.208", features = ["derive"], no-default-features = true }
+embedder-external = { version = "0.1.0", path = "../embedder-external" }
 thiserror = "1.0.63"
+unicode-ident = "1.0.12"
