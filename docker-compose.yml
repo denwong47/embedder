@@ -10,3 +10,16 @@ services:
     - ./models:/root/models
     environment:
     - MODEL=${MODEL}
+
+  build-binary:
+    build:
+      context: .
+      dockerfile: docker/BuildFedora.Dockerfile
+    image: denwong47/embedder-build
+    volumes:
+    - .:/root/crate/embedder
+    environment:
+    - TARGET=x86_64-unknown-linux-gnu
+    - BUILD_ARGS=--release --features=sentence_transformers
+    - MODEL_PATH=/root/crate/embedder/models
+    - PKG_CONFIG_SYSROOT_DIR=/

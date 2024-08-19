@@ -11,7 +11,7 @@ cli = ["clap"]
 clap = ["embedder-external/clap"]
 
 [dependencies]
-serde = { version = "1.0.208", features = ["derive"], no-default-features = true }
+serde = { version = "1.0.208", features = ["derive"], default-features = false }
 embedder-external = { version = "0.1.0", path = "../embedder-external" }
 thiserror = "1.0.63"
 unicode-ident = "1.0.12"
