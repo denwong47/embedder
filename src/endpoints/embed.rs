@@ -10,7 +10,7 @@ use embedder_lib::{transform::CanTransform, Embedding};
 use std::sync::Arc;
 use tokio::time::Instant;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub enum OutputType {
     #[serde(rename = "json")]
     Json,
@@ -24,7 +24,7 @@ impl Default for OutputType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EmbeddingModel {
     #[serde(rename = "sentence-transformers/all-MiniLM-L6-v2")]
     #[cfg(feature = "sentence_transformers_all_minilm_l6_v2")]
@@ -81,9 +81,15 @@ pub async fn embed(
 
     match query.output {
         OutputType::Json => {
-            let embeddings = request.model.embed_to_vec(request.documents)?;
+            let model = request.model.clone();
+            let embeddings = tokio::task::spawn_blocking(move || {
+                eprintln!("Embedding {} documents...", request.documents.len());
+                request.model.embed_to_vec(request.documents)
+            })
+            .await
+            .map_err(|err| EmbedderAPIError::ConcurrencyError(err.to_string()))??;
             Ok(Json(EmbedResponse {
-                model: request.model,
+                model,
                 duration: start.elapsed().as_secs_f32(),
                 embeddings,
             }))

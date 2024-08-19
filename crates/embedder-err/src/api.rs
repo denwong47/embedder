@@ -65,6 +65,9 @@ pub enum EmbedderAPIError {
     #[error("User terminated.")]
     UserTerminated,
 
+    #[error("Error during concurrency provision: {0}")]
+    ConcurrencyError(String),
+
     // This is just a demo of how to export `errors`. It is unlikely that we can check
     // each input and return a list of errors like this.
     #[error("Cannot embed some of the inputs.")]
