@@ -13,7 +13,7 @@ clap = ["dep:clap"]
 [dependencies]
 axum = { version = "0.7.5", optional = true }
 clap = { version = "4.5.16", optional = true, features = ["derive"] }
-fastembed = { version = "3.14.1", path = "../fastembed-rs" }
+fastembed = { path = "../fastembed-rs" }
 # This needs to be the same version as in fastembed-rs
 ndarray = { version = "=0.15.0", default-features = false }
 serde = { version = "1.0.208" }
