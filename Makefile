@@ -18,3 +18,10 @@ build:
 # build: TARGET=$(BUILD_TARGET)
 # build:
 # 	CROSS_CONTAINER_OPTS="--volume $(pwd)/models:/tmp/models" cross build --target $(TARGET) --release --features=sentence_transformers
+
+host:
+	docker compose build build-host
+	docker compose up build-host
+
+export_host:
+	docker save denwong47/embedder-host:latest | gzip > docker/embedder-host.tar.gz

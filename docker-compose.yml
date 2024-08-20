@@ -15,6 +15,7 @@ services:
     build:
       context: .
       dockerfile: docker/BuildFedora.Dockerfile
+      target: build
     image: denwong47/embedder-build
     volumes:
     - .:/root/crate/embedder
@@ -23,3 +24,15 @@ services:
     - BUILD_ARGS=--release --features=sentence_transformers
     - MODEL_PATH=/root/crate/embedder/models
     - PKG_CONFIG_SYSROOT_DIR=/
+
+  build-host:
+    extends:
+      service: build-binary
+    build:
+      target: host
+      args:
+      - TARGET=x86_64-unknown-linux-gnu
+    image: denwong47/embedder-host
+    volumes:
+    ports:
+    - "3000:3000"
