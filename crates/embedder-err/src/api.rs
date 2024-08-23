@@ -62,6 +62,9 @@ pub enum EmbedderAPIError {
     #[error("{0}")]
     AxumError(#[from] axum::Error),
 
+    #[error("{0}")]
+    SerdeJsonError(#[from] serde_json::Error),
+
     #[error("User terminated.")]
     UserTerminated,
 

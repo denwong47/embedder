@@ -8,25 +8,28 @@ WORKDIR /root/crate/embedder
 
 COPY docker/build.sh /root/crate/build.sh
 
+VOLUME ["/root/crate/embedder"]
+
 FROM base AS build
 
-VOLUME ["/root/crate/embedder"]
 ENTRYPOINT [ "sh", "-c", "/root/crate/build.sh" ]
 
-FROM build AS host
-# You can only run this target after running the build target
+FROM base AS local-build
+ARG TARGET
+ARG BUILD_ARGS
+ENV TARGET=${TARGET}
+ENV BUILD_ARGS=${BUILD_ARGS}
 
-# ENV MODEL_PATH=/root/crate/embedder/models
-# ENV PKG_CONFIG_SYSROOT_DIR=/
+COPY . /root/crate/embedder
 
-# COPY . .
-# RUN source $HOME/.bashrc && cargo build --release --features=sentence_transformers
-# RUN mv target/release/embedder /root/embedder
-# RUN rm -rf /root/crate
+WORKDIR /root/crate/embedder
+RUN MODEL_PATH=/root/crate/embedder/models TARGET=${TARGET} BUILD_ARGS=${BUILD_ARGS} /root/crate/build.sh
+
+FROM base AS host
 
 ARG TARGET
+COPY --from=local-build /root/crate/embedder/target/${TARGET}/release/embedder /root/embedder
 
-COPY target/${TARGET}/release/embedder /root/embedder
 WORKDIR /root
 
 ENTRYPOINT [ "/root/embedder" ]

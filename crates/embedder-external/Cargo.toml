@@ -10,6 +10,8 @@ axum = ["dep:axum"]
 cli = ["clap"]
 clap = ["dep:clap"]
 
+ndarray-serde = ["ndarray/serde"]
+
 [dependencies]
 axum = { version = "0.7.5", optional = true }
 clap = { version = "4.5.16", optional = true, features = ["derive"] }
