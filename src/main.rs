@@ -8,6 +8,8 @@ use embedder_external::clap::Parser;
 mod args;
 use args::CliArgs;
 
+mod common;
+
 mod endpoints;
 
 #[cfg(feature = "status")]

@@ -19,7 +19,7 @@ sentence_transformers = ["sentence_transformers_all_minilm_l6_v2", "sentence_tra
 
 [dependencies]
 embedder-err = { version = "0.1.0", path = "crates/embedder-err", features = ["api", "cli"] }
-embedder-external = { version = "0.1.0", path = "crates/embedder-external", features = ["api", "cli"] }
+embedder-external = { version = "0.1.0", path = "crates/embedder-external", features = ["api", "cli", "ndarray-serde"] }
 embedder-lib = { version = "0.1.0", path = "crates/embedder-lib" }
 memory-stats = { version = "1.2.0", optional = true, features = ["serde"] }
 serde = { version = "1.0.208", features = ["derive"], default-features = false }
