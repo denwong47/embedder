@@ -23,7 +23,7 @@ mod tests {
 
     const EPS: f32 = 1e-4;
 
-    static TEST_DOCUMENTS: &[&'static str] = &[
+    static TEST_DOCUMENTS: &[&str] = &[
         "Rust is ideal for many people for a variety of reasons. Let's look at a few of the most important groups.",
         "Rust is proving to be a productive tool for collaborating among large teams of developers with varying levels of systems programming knowledge.",
         "Low-level code is prone to various subtle bugs, which in most other languages can be caught only through extensive testing and careful code review by experienced developers.",

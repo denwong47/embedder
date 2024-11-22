@@ -14,6 +14,7 @@ use tokio::time::Instant;
 use crate::common::{calculate_default_batch_size, ToJsonResponse};
 
 #[derive(Debug, Clone, Deserialize)]
+#[non_exhaustive]
 pub enum OutputType {
     #[serde(rename = "json")]
     Json,
@@ -21,6 +22,8 @@ pub enum OutputType {
     Array,
     #[serde(rename = "pickle")]
     Pickle,
+    #[serde(rename = "msgpack")]
+    MsgPack,
 }
 
 impl Default for OutputType {
@@ -115,6 +118,13 @@ pub async fn embed(
                             request.model.$method(request.documents, Some(batch_size))
                         })
                         .await
+                        .inspect(
+                            |result| {
+                                if let Err(err) = result {
+                                    eprintln!("Error embedding documents: {:?}", err);
+                                }
+                            }
+                        )
                         .map_err(|err| EmbedderAPIError::ConcurrencyError(err.to_string()))??;
                         EmbedResponse {
                             model,
@@ -124,6 +134,7 @@ pub async fn embed(
                     }
                 ),*
                 OutputType::Pickle => Err(EmbedderAPIError::NotImplemented("Pickle output".to_owned())),
+                OutputType::MsgPack => Err(EmbedderAPIError::NotImplemented("MsgPack output".to_owned())),
             }
         };
     }

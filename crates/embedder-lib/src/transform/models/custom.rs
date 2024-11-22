@@ -15,6 +15,7 @@ impl Model {
     /// Create a new instance of the model.
     ///
     /// To create the model using a folder containing the model files, use the `from_path` method.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         name: &'static str,
         output_key: &'static str,
@@ -40,7 +41,7 @@ impl Model {
 
         fastembed::TextEmbedding::try_new_from_user_defined(user_model, Default::default())
             .map_err(|err| EmbedderError::ModelLoadError {
-                name: &name,
+                name,
                 error: err.to_string(),
             })
             .map(|text_embedding| {
@@ -126,7 +127,7 @@ impl Model {
 impl CanTransform for Arc<Model> {
     /// The name of the model.
     fn name(&self) -> &str {
-        &self.name
+        self.name
     }
 
     /// The output key of the model.
@@ -150,7 +151,7 @@ impl CanTransform for Arc<Model> {
     {
         self.model
             .transform(texts, batch_size)
-            .map_err(|err| EmbedderError::FastEmbedError(err))
+            .map_err(EmbedderError::FastEmbedError)
     }
 }
 
@@ -165,10 +166,12 @@ mod test {
         let model_path_str = test_utils::get_model_path();
         let model_path = std::path::Path::new(&model_path_str)
             .canonicalize()
-            .expect(&format!(
-                "Failed to get the canonical path for {model_path:?}.",
-                model_path = &model_path_str,
-            ));
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Failed to get the canonical path for {model_path:?}.",
+                    model_path = &model_path_str
+                )
+            });
 
         let model = super::Model::from_path(
             "sentence-transformers/all-MiniLM-L6-v2",
@@ -178,10 +181,8 @@ mod test {
             Some(fastembed::Pooling::Mean),
             fastembed::QuantizationMode::None,
         )
-        .expect(&format!(
-            "Failed to load the model. Make sure the model files are present in {model_path:?}.",
-            model_path = &model_path,
-        ));
+        .unwrap_or_else(|_| panic!("Failed to load the model. Make sure the model files are present in {model_path:?}.",
+            model_path = &model_path));
 
         let documents = vec!["Hello, world!", "This is a test."];
 

@@ -38,6 +38,33 @@ An example workflow will be:
 - Run `make convert_model MODEL=...` to convert your PyTorch model into an ONNX model.
   - The `MODEL` variable should be the HuggingFace model name, e.g. `sentence-transformers/all-mpnet-base-v2` or `sentence-transformers/all-MiniLM-L6-v2`.
   - The models will be exported to the `models` directory.
+  - A `TASK` variable can be added to specify the task, e.g. `TASK=feature-extraction`. Defaults to `TASK=sentence-similarity`. Possible values are:
+    - `fill-mask`
+    - `mask-generation`
+    - `token-classification`
+    - `feature-extraction`
+    - `object-detection`
+    - `semantic-segmentation`
+    - `audio-xvector`
+    - `image-classification`
+    - `depth-estimation`
+    - `audio-classification`
+    - `multiple-choice`
+    - `image-to-image`
+    - `image-to-text`
+    - `automatic-speech-recognition`
+    - `sentence-similarity`
+    - `zero-shot-object-detection`
+    - `audio-frame-classification`
+    - `masked-im`
+    - `question-answering`
+    - `text-classification`
+    - `text2text-generation`
+    - `image-segmentation`
+    - `text-to-audio`
+    - `zero-shot-image-classification`
+    - `text-generation`
+  - Check your model on the HuggingFace model hub to see if it supports the task you are trying to convert.
 - Run `make host` to host the API on `localhost:3000`.
 - Test the endpoint using your desired HTTP client, such as `requests` in Python:
 

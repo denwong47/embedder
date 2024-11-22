@@ -1,7 +1,5 @@
 use std::{env, fs, io, path};
 
-use unicode_ident;
-
 /// Build module name
 fn build_module_name(name: &str) -> Option<String> {
     name.chars()
@@ -52,11 +50,24 @@ fn add_model(model_path: &str, name: &str, file_names: [&str; 5]) -> io::Result<
             .map(|(file_name, var_name)| {
                 let file_path = model_dir.join(file_name);
 
-                Ok(format!(
-                    r#"    pub const {var_name}: &[u8] = include_bytes!({file_path:?});"#,
-                    var_name = var_name,
-                    file_path = file_path
-                ))
+                #[allow(unexpected_cfgs)]
+                if cfg!(feature = "skip_embed_models") {
+                    Ok(format!(
+                        r#"
+    // Clippy cannot resolve this path correctly, so we need to use an empty byte array.
+    pub const {var_name}: &[u8] = b"";
+    "#,
+                        var_name = var_name
+                    ))
+                } else {
+                    Ok(format!(
+                        r#"
+        pub const {var_name}: &[u8] = include_bytes!({file_path:?});
+        "#,
+                        var_name = var_name,
+                        file_path = file_path
+                    ))
+                }
             }),
     )?;
 
@@ -87,7 +98,7 @@ fn main() -> io::Result<()> {
 
     let dest_path = path::Path::new(&out_dir).join("src/transform/models/binaries.rs");
 
-    dest_path.parent().map(|parent| fs::create_dir_all(parent));
+    dest_path.parent().map(fs::create_dir_all);
 
     let models = [
         #[cfg(feature = "sentence_transformers_all_minilm_l6_v2")]
