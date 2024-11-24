@@ -7,9 +7,7 @@ services:
       dockerfile: docker/ConvertModel.Dockerfile
     image: denwong47/embedder-convert-model
     volumes:
-    - ./models:/root/models
-    environment:
-    - MODEL=${MODEL}
+      - ./models:/root/models
 
   build-binary:
     build:
@@ -18,12 +16,12 @@ services:
       target: build
     image: denwong47/embedder-build
     volumes:
-    - .:/root/crate/embedder
+      - .:/root/crate/embedder
     environment:
-    - TARGET=x86_64-unknown-linux-gnu
-    - BUILD_ARGS=--release --features=sentence_transformers
-    - MODEL_PATH=/root/crate/embedder/models
-    - PKG_CONFIG_SYSROOT_DIR=/
+      - TARGET=x86_64-unknown-linux-gnu
+      - BUILD_ARGS=--release --features=sentence_transformers,status
+      - MODEL_PATH=/root/crate/embedder/models
+      - PKG_CONFIG_SYSROOT_DIR=/
 
   build-host:
     extends:
@@ -31,8 +29,8 @@ services:
     build:
       target: host
       args:
-      - TARGET=x86_64-unknown-linux-gnu
-      - BUILD_ARGS=--release --features=sentence_transformers
+        - TARGET=x86_64-unknown-linux-gnu
+        - BUILD_ARGS=--release --features=sentence_transformers,status
     image: denwong47/embedder-host
     ports:
-    - "3000:3000"
+      - "3000:3000"

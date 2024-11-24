@@ -17,7 +17,7 @@ where
             error: error.to_string(),
         })
         .and_then(|value| {
-            if value.len() == 0 {
+            if value.is_empty() {
                 Err(EmbedderError::EnvVarError {
                     key: key.to_string(),
                     error: "Empty value".to_string(),

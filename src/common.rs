@@ -22,5 +22,5 @@ where
 
 /// Placeholder function to calculate the default batch size.
 pub fn calculate_default_batch_size(_count: usize) -> usize {
-    16
+    256
 }

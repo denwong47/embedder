@@ -7,9 +7,9 @@ RESET:="\\033\[0m"
 
 
 convert_model:
-	@if [ -z "$(MODEL)" ]; then echo "$(RED)Environment Variable MODEL is not set.$(RESET) Please set it to the model you want to convert, e.g. 'make convert-model MODEL=sentence-transformers/all-mpnet-base-v2'."; exit 1; fi
+	@if [ -z "$${MODEL}" ]; then echo "$(RED)Environment Variable MODEL is not set.$(RESET) Please set it to the model you want to convert, e.g. 'make convert_model MODEL=sentence-transformers/all-mpnet-base-v2 TASK=sentence-similarity'."; exit 1; fi
 	docker compose build convert-model
-	docker compose run -e MODEL=$(MODEL) convert-model
+	docker compose run -e MODEL=$(MODEL) -e TASK=$(TASK) convert-model
 
 build:
 	docker compose build build-binary

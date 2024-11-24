@@ -24,14 +24,14 @@ pub trait CanTransform {
     ///
     /// Instead of trying different keys in succession, the embedding operation
     /// should fail if the key is not found.
-    fn output_precedence<'e>(&self) -> [fastembed::OutputKey; 1] {
+    fn output_precedence(&self) -> [fastembed::OutputKey; 1] {
         [fastembed::OutputKey::ByName(self.output_key())]
     }
 
     /// Static function to converts the output to a 2D array.
-    fn output_to_2d_array<'r, 's>(
+    fn output_to_2d_array(
         &self,
-        output: fastembed::EmbeddingOutput<'r, 's>,
+        output: fastembed::EmbeddingOutput<'_, '_>,
     ) -> Result<ndarray::Array2<f32>, EmbedderError> {
         output
             .export_with_transformer(
@@ -46,11 +46,11 @@ pub trait CanTransform {
                             )
                         })
                         .reduce(|acc, res| match (acc, res) {
-                            (Err(e), _) => return Err(e),
-                            (_, Err(e)) => return Err(e),
+                            (Err(e), _) => Err(e),
+                            (_, Err(e)) => Err(e),
                             (Ok(acc), Ok(res)) => {
                                 ndarray::concatenate(ndarray::Axis(0), &[acc.view(), res.view()])
-                                    .map_err(|err| anyhow::Error::from(err))
+                                    .map_err(anyhow::Error::from)
                             }
                         })
                         .unwrap_or(Err(anyhow::Error::msg("No output found.")))

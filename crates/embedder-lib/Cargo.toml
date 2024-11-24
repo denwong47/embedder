@@ -9,6 +9,11 @@ sentence_transformers_all_minilm_l6_v2 = []
 sentence_transformers_all_mpnet_base_v2 = []
 sentence_transformers = ["sentence_transformers_all_minilm_l6_v2", "sentence_transformers_all_mpnet_base_v2"]
 
+# This prevents the models from being embedded into the binary; this is useful for
+# running clippy without the models being present, but it stops unit tests from
+# functioning.
+# skip_embed_models = []
+
 [build-dependencies]
 itertools = "0.13.0"
 unicode-ident = "1.0.12"
