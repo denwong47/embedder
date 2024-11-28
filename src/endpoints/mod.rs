@@ -6,3 +6,6 @@ pub use embed::*;
 
 mod root;
 pub use root::*;
+
+mod health;
+pub use health::*;

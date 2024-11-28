@@ -32,4 +32,4 @@ COPY --from=local-build /root/crate/embedder/target/${TARGET}/release/embedder /
 
 WORKDIR /root
 
-ENTRYPOINT [ "/root/embedder" ]
+ENTRYPOINT [ "/root/embedder", "--port", "3456" ]

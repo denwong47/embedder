@@ -4,7 +4,7 @@ authors = [
 ]
 name = "embedder"
 description = "API to embed documents into various formats."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 exclude = ["crates/fastembed-rs/**", "models/**"]
@@ -27,6 +27,7 @@ tokio = { version = "1.39.2", features = ["sync", "macros", "rt-multi-thread", "
 
 [workspace]
 members = [
+    "",
     "crates/embedder-err",
     "crates/embedder-external",
     "crates/embedder-lib",

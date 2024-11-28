@@ -27,17 +27,17 @@ impl Model {
         pooling: Option<fastembed::Pooling>,
         quantization: fastembed::QuantizationMode,
     ) -> Result<Arc<Self>, EmbedderError> {
-        let user_model = fastembed::UserDefinedEmbeddingModel {
+        let user_model = fastembed::UserDefinedEmbeddingModel::new(
             onnx_file,
-            tokenizer_files: fastembed::TokenizerFiles {
+            fastembed::TokenizerFiles {
                 tokenizer_file,
                 config_file,
                 special_tokens_map_file,
                 tokenizer_config_file,
             },
-            pooling: pooling.clone(),
-            quantization,
-        };
+        )
+        .with_pooling(pooling.clone().unwrap_or_default())
+        .with_quantization(quantization);
 
         fastembed::TextEmbedding::try_new_from_user_defined(user_model, Default::default())
             .map_err(|err| EmbedderError::ModelLoadError {

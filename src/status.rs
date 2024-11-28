@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, OnceLock};
 
 /// The global status of the server.
-static GLOBAL_STATUS: OnceLock<Arc<Status>> = OnceLock::new();
+pub(crate) static GLOBAL_STATUS: OnceLock<Arc<Status>> = OnceLock::new();
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
