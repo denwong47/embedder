@@ -1,3 +1,0 @@
-[submodule "crates/fastembed-rs"]
-	path = crates/fastembed-rs
-	url = git@github.com:denwong47/fastembed-rs

@@ -10,8 +10,8 @@ pub struct CliArgs {
     #[arg(long, default_value_t = Ipv4Addr::new(0, 0, 0, 0))]
     host: Ipv4Addr,
 
-    /// The port to listen on. Defaults to 3000.
-    #[arg(short, long, default_value_t = 3000)]
+    /// The port to listen on. Defaults to 3456.
+    #[arg(short, long, default_value_t = 3456)]
     port: u16,
 }
 

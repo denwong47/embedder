@@ -51,9 +51,9 @@ macro_rules! create_model {
                 /// Create a new instance of the model.
                 pub fn new() -> Result<Arc<Self>, EmbedderError> {
                     match MODEL.get_or_init(|| {
-                        let user_model = fastembed::UserDefinedEmbeddingModel {
-                            onnx_file: binaries::$binaries::MODEL_FILE.to_vec(),
-                            tokenizer_files: fastembed::TokenizerFiles {
+                        let user_model = fastembed::UserDefinedEmbeddingModel::new(
+                            binaries::$binaries::MODEL_FILE.to_vec(),
+                            fastembed::TokenizerFiles {
                                 tokenizer_file: binaries::$binaries::TOKENIZER_FILE.to_vec(),
                                 config_file: binaries::$binaries::CONFIG_FILE.to_vec(),
                                 special_tokens_map_file:
@@ -61,9 +61,9 @@ macro_rules! create_model {
                                 tokenizer_config_file: binaries::$binaries::TOKENIZER_CONFIG_FILE
                                     .to_vec(),
                             },
-                            pooling: $pooling,
-                            quantization: $quantization,
-                        };
+                        )
+                        .with_pooling($pooling.unwrap_or_default())
+                        .with_quantization($quantization);
 
                         fastembed::TextEmbedding::try_new_from_user_defined(
                             user_model,
