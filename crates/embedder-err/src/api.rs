@@ -71,6 +71,9 @@ pub enum EmbedderAPIError {
     #[error("Error during concurrency provision: {0}")]
     ConcurrencyError(String),
 
+    #[error("Too many concurrent requests: {0}")]
+    TooManyConcurrentRequests(usize),
+
     // This is just a demo of how to export `errors`. It is unlikely that we can check
     // each input and return a list of errors like this.
     #[error("Cannot embed some of the inputs.")]
@@ -83,7 +86,14 @@ pub enum EmbedderAPIError {
 impl EmbedderAPIError {
     /// Get the status code for the error.
     pub fn status_code(&self) -> StatusCode {
-        StatusCode::INTERNAL_SERVER_ERROR
+        match self {
+            Self::ArgsError(_) => StatusCode::BAD_REQUEST,
+            Self::UserTerminated => StatusCode::BAD_GATEWAY,
+            Self::ConcurrencyError(_) => StatusCode::SERVICE_UNAVAILABLE,
+            Self::TooManyConcurrentRequests(_) => StatusCode::TOO_MANY_REQUESTS,
+            Self::CannotEmbedInput(_) => StatusCode::BAD_REQUEST,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
+        }
     }
 
     /// Get the variant name of the error.

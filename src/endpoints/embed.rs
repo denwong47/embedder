@@ -8,10 +8,21 @@ use embedder_external::axum::{
 use embedder_external::serde::{Deserialize, Serialize};
 use embedder_external::{fastembed, ndarray, serde_json};
 use embedder_lib::{transform::CanTransform, Embedding};
-use std::sync::Arc;
+use std::sync::{
+    atomic::{AtomicUsize, Ordering},
+    Arc, OnceLock,
+};
 use tokio::time::Instant;
 
-use crate::common::{calculate_default_batch_size, ToJsonResponse};
+use crate::{
+    common::{
+        calculate_default_batch_size, ToJsonResponse, CONCURRENT_LIMITER, MAX_CONCURRENT_REQUESTS,
+    },
+    helpers::ConcurrencyLimiter,
+};
+
+#[cfg(feature = "status")]
+use crate::status::Status;
 
 #[derive(Debug, Clone, Deserialize)]
 #[non_exhaustive]
@@ -100,6 +111,14 @@ pub async fn embed(
 ) -> Result<Json<serde_json::Value>, EmbedderAPIError> {
     let start = Instant::now();
 
+    #[cfg(feature = "status")]
+    Status::get().increment_requests();
+
+    let initiator = || {
+        eprintln!("Initializing the concurrent requests counter...");
+        ConcurrencyLimiter::<MAX_CONCURRENT_REQUESTS>::new()
+    };
+
     // Clone the model for logging only
     let model = request.model.clone();
     macro_rules! map_output_type_to_method {
@@ -107,6 +126,10 @@ pub async fn embed(
             match query.output {
                 $(
                     OutputType::$variant => {
+                        // Limit the number of concurrent requests by acquiring a token.
+                        // The token itself is not used, but upon dropping it, the lock is released.
+                        let _token = CONCURRENT_LIMITER.get_or_init(initiator).acquire()?;
+
                         let batch_size = request.batch_size.unwrap_or_else(|| calculate_default_batch_size(request.documents.len()));
                         let embeddings = tokio::task::spawn_blocking(move || {
                             eprintln!(
@@ -126,6 +149,7 @@ pub async fn embed(
                             }
                         )
                         .map_err(|err| EmbedderAPIError::ConcurrencyError(err.to_string()))??;
+
                         EmbedResponse {
                             model,
                             duration: start.elapsed().as_secs_f32(),

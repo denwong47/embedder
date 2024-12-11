@@ -10,6 +10,8 @@ use args::CliArgs;
 
 mod common;
 
+pub(crate) mod helpers;
+
 mod endpoints;
 
 #[cfg(feature = "status")]
@@ -29,6 +31,7 @@ async fn main() -> Result<(), EmbedderAPIError> {
     // build our application with a single route
     let app = Router::new()
         .route("/", get(endpoints::root))
+        .route("/health", get(endpoints::health))
         .route("/embed", post(endpoints::embed));
 
     // run our app with hyper, listening globally on port 3000

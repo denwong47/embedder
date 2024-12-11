@@ -24,7 +24,7 @@ The project is split into three parts:
   > This library will embed the whole model into the binary, in order to simplify deployment. This lengthens the build time of the library, but makes the resulting binary more portable.
 
 - `make convert_model MODEL=...`: A Make target that converts a PyTorch model into an ONNX model. This is required for the `embedder-lib` to work. This utilizes `torch` and `optimium` within a Docker container, which is not required for the final deployment.
-- `make host`: A Make target that hosts the API on `localhost:3000`. This is a simple API that accepts a `POST` request with a JSON body containing a list of strings, and returns a JSON body containing a list of embeddings. This can be followed by `make export_host` to export the built image into a Docker image for deployment.
+- `make host`: A Make target that hosts the API on `localhost:3456`. This is a simple API that accepts a `POST` request with a JSON body containing a list of strings, and returns a JSON body containing a list of embeddings. This can be followed by `make export_host` to export the built image into a Docker image for deployment.
 
 ## How to run
 
@@ -65,7 +65,7 @@ An example workflow will be:
     - `zero-shot-image-classification`
     - `text-generation`
   - Check your model on the HuggingFace model hub to see if it supports the task you are trying to convert.
-- Run `make host` to host the API on `localhost:3000`.
+- Run `make host` to host the API on `localhost:3456`.
 - Test the endpoint using your desired HTTP client, such as `requests` in Python:
 
   ```python
@@ -76,7 +76,7 @@ An example workflow will be:
   ...     "This is another test sentence.",
   ...     "Foo Bar",
   ... ]
-  >>> response = requests.post("http://localhost:3000/embed?output=array", json={ "model": "sentence-transformers/all-MiniLM-L6-v2", "documents": docs })
+  >>> response = requests.post("http://localhost:3456/embed?output=array", json={ "model": "sentence-transformers/all-MiniLM-L6-v2", "documents": docs })
   >>> response.json()
   {'duration': 0.5497052669525146,
    'embeddings': {'data': [0.08429647982120514,
